@@ -149,7 +149,7 @@ extends PetrinetObject {
         return arcs;
     }
     public boolean hasDeadlock() {
-    	if (this.getStateTree().getBlockingStates() != null)
+    	if (!this.getStateTree().getBlockingStates().isEmpty())
     		return true;
     	return false;
     }
