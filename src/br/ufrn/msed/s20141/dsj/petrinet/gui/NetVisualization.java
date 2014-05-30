@@ -75,8 +75,7 @@ public class NetVisualization extends JPanel {
 				if (subject instanceof Transition) {
 					Transition transition = (Transition) subject;
 					if (pickedState.isPicked(transition)) {
-						if (transition.canFire()){
-							transition.fire();
+						if (transition.fire()){
 							pickedState.pick(transition, false);
 						}
 					}

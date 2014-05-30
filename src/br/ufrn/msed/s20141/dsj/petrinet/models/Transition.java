@@ -14,7 +14,10 @@ extends PetrinetObject{
     private List<Arc> outgoing = new ArrayList<Arc>();
     
     /**
+     * Verifica se o evento pode ocorrer. O que habilita uma transição é a existência
+     * ou n ão do token nos seus lugares de entrada.
      * @return true, caso possa ser disparado
+     *
      */
     public boolean canFire() {
         boolean canFire = true;
@@ -30,15 +33,26 @@ extends PetrinetObject{
         }
         return canFire;
     }
-    
-    public void fire() {
-        for (Arc arc : incoming) {
-            arc.fire();
-        }
-        
-        for (Arc arc : outgoing) {
-            arc.fire();
-        }
+    /**
+     * Representa o evento ocorrido na transição.
+     * Remove a quantidade de marcação (place.token) nos seus lugares de entrada equivalente
+   	 * a quantidade de pesos (arc.weight) nos arcos de entrada para os lugares de saída.
+     * @return true, caso o disparo tenha ocorrido
+     *
+     */
+    //inclui o this.canFire, pois poderia ocorrer erro se chamasse o método diretamente.
+    public boolean fire() {
+    	if (this.canFire()) {
+	        for (Arc arc : incoming) {
+	            arc.fire();
+	        }
+	        
+	        for (Arc arc : outgoing) {
+	            arc.fire();
+	        }
+	        return true;
+    	}
+    	return false;
     }
     
     public List<Arc> getIncoming() {

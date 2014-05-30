@@ -57,8 +57,8 @@ extends PetrinetObject {
     
     @Override
     public String toString() {
-        return super.toString();
-//               " t=" + this.tokens ;
+        return super.toString(); 
+//               " t=" + this.tokens 
 //               " max=" + (hasUnlimitedMaxTokens()? "\u221e" : this.maxTokens);
     }
 }
