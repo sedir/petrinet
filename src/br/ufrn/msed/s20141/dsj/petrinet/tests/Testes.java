@@ -42,6 +42,29 @@ public class Testes {
 		assertArrayEquals(new double [] {0.0, 2.0, 0.0, 2.0}, petrinet.stateVector(),0);		
 		
 	}
+	private void arrayEquals(boolean [] expecteds, boolean [] actuals) {
+		for (int i = 0; i < actuals.length; i++) {
+			if (expecteds[i] != actuals[i])
+				assertEquals(true, false);
+		}
+		assertEquals(true, true);
+	}
+	public void test_valida_transicoes_ativas() {
+		Transition t = petrinet.getTransition("t1");
+		arrayEquals(new boolean [] {true, false, false}, petrinet.getEnabledTransitions());
+		t.fire();
+		arrayEquals(new boolean [] {true, true, false}, petrinet.getEnabledTransitions());	
+		t.fire();
+		arrayEquals(new boolean [] {false, true, false}, petrinet.getEnabledTransitions());	
+		assertEquals(t.canFire(), false);
+		
+		t = petrinet.getTransition("t2");
+		t.fire();
+		arrayEquals(new boolean [] {false, true, false}, petrinet.getEnabledTransitions());	
+		t.fire();
+		arrayEquals(new boolean [] {false, false, false}, petrinet.getEnabledTransitions());			
+		
+	}
 	private String getNet1() {
 		
         StringBuilder sb = new StringBuilder("net Minha rede ");

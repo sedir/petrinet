@@ -219,7 +219,15 @@ extends PetrinetObject {
 			System.out.println();
 		}
     }
-    
+    public boolean[] getEnabledTransitions() {
+    	int maxT = this.transitions.size();
+    	boolean[] enabled = new boolean[maxT];
+    	int i=0;
+		for (Transition t : transitions) {
+			enabled[i] = t.canFire();
+		}    	
+		return enabled;
+    }
     public double[] stateVector(){
     	double[] vector = new double[places.size()];
     	
