@@ -11,6 +11,7 @@ public class Petrinet
 extends PetrinetObject {
 
     private static final String nl = "\n";
+    StateTree state = null;
     List<Place> places              = new ArrayList<Place>();
     List<Transition> transitions    = new ArrayList<Transition>();
     List<Arc> arcs                  = new ArrayList<Arc>();
@@ -147,6 +148,11 @@ extends PetrinetObject {
     public List<Arc> getArcs() {
         return arcs;
     }
+    public boolean hasDeadlock() {
+    	if (this.getStateTree().getBlockingStates() != null)
+    		return true;
+    	return false;
+    }
     
     public boolean existTransition(String name){
     	for (Transition t : transitions) {
@@ -225,6 +231,7 @@ extends PetrinetObject {
     	int i=0;
 		for (Transition t : transitions) {
 			enabled[i] = t.canFire();
+			i++;
 		}    	
 		return enabled;
     }
@@ -246,8 +253,10 @@ extends PetrinetObject {
 		}
     	System.out.println();
     }
-    
-    public StateTree stateTree(){
-    	return new StateTree(this);
+    public StateTree getStateTree() {
+    	if (this.state == null)
+    		this.state = new StateTree(this);
+    	return this.state;
     }
+    
 }

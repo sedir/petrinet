@@ -19,6 +19,7 @@ public class StateTree {
 
 	public StateTree(Petrinet net) {
 		this.net = net;
+		net.state = this;
 		this.root = new Node(net, net.stateVector(), this);
 		try{
 			this.root.checkAndExpand();
@@ -30,6 +31,7 @@ public class StateTree {
 
 	public StateTree(Petrinet net, double[] initialState){
 		this.net = net;
+		net.state = this;
 		this.root = new Node(net, initialState, this);
 		this.root.checkAndExpand();
 		this.getBlockingStates();
