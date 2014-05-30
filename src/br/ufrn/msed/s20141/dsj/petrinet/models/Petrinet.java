@@ -1,6 +1,7 @@
 package br.ufrn.msed.s20141.dsj.petrinet.models;
 
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 
 import br.ufrn.msed.s20141.dsj.petrinet.models.Arc.Direction;
@@ -147,6 +148,14 @@ extends PetrinetObject {
 
     public List<Arc> getArcs() {
         return arcs;
+    }
+    public boolean hasPlaceReachable(double[] states) {
+		List<Node> lista = getStateTree().getNodeList();
+		for (Node node : lista) {
+			if (Arrays.equals(states, node.currentState))
+				return true;
+		}
+    	return false;
     }
     public boolean hasDeadlock() {
     	if (!this.getStateTree().getBlockingStates().isEmpty())

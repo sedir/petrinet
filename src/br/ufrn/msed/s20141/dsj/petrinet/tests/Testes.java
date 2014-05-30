@@ -58,6 +58,16 @@ public class Testes {
 		assertEquals(true, petrinet1.hasBounded());
 	}
 	@Test
+	public void testenet1_estado_alcancavel() {
+		assertEquals(true,petrinet1.hasPlaceReachable(new double [] {0.0, 2.0, 0.0, 2.0}));
+		assertEquals(false,petrinet1.hasPlaceReachable(new double [] {0.0, 2.0, 0.0, 1.0}));
+	}	
+	@Test
+	public void testenet2_estado_alcancavel() {
+		assertEquals(true, petrinet1.hasBounded());
+		petrinet1.hasPlaceReachable(new double [] {1.0, 1.0, 1.0, 0.0});
+	}	
+	@Test
 	public void testenet2_ha_estado_nao_limitado() {
 		assertEquals(false, petrinet2.hasBounded());
 	}
@@ -78,6 +88,8 @@ public class Testes {
 		arrayEquals(new boolean [] {false, false, false}, petrinet1.getEnabledTransitions());			
 		
 	}
+	
+	
 	private void arrayEquals(boolean [] expecteds, boolean [] actuals) {
 		for (int i = 0; i < actuals.length; i++) {
 			if (expecteds[i] != actuals[i])
