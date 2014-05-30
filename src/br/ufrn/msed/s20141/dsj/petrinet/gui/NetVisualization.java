@@ -88,7 +88,7 @@ public class NetVisualization extends JPanel {
 		
 		// Definicao de estilo
 		vv.setBackground(Color.white);
-		vv.getRenderContext().setEdgeShapeTransformer(new EdgeShape.BentLine());
+		vv.getRenderContext().setEdgeShapeTransformer(new EdgeShape.QuadCurve());
 		vv.getRenderContext().setVertexLabelTransformer(new ToStringLabeller<PetrinetObject>());
 		vv.setVertexToolTipTransformer(new ToStringLabeller<PetrinetObject>());
 		vv.getRenderContext().setArrowFillPaintTransformer(new ConstantTransformer(Color.lightGray));
