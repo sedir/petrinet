@@ -77,7 +77,7 @@ public class StatusPane extends JPanel {
 				dialog.setContentPane(new IncidenceMatrixPane(petrinet));
 				dialog.setModal(true);
 				dialog.pack();
-				dialog.setTitle(BUNDLE.getString("StatusPane.btnMatrizDeIncidncia.text"));
+				dialog.setTitle("SSRP");
 				dialog.setVisible(true);
 				
 			}
