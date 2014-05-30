@@ -48,12 +48,14 @@ public class NetVisualization extends JPanel {
 	private static final long serialVersionUID = 2441662300562931930L;
 
 	Petrinet pn;
+	VisualizationViewer<PetrinetObject, Arc> vv;
+
 
 	public NetVisualization(Petrinet pn) {
 		super(new BorderLayout());
 		this.pn = pn;
 
-		VisualizationViewer<PetrinetObject, Arc> vv = new VisualizationViewer<PetrinetObject,Arc>(new KKLayout<PetrinetObject,Arc>(pn.getGraphicRepresentation()), new Dimension(500,500));
+		vv = new VisualizationViewer<PetrinetObject,Arc>(new KKLayout<PetrinetObject,Arc>(pn.getGraphicRepresentation()), new Dimension(500,500));
 
 		// Definicao de borda da visualizacao
 		final GraphZoomScrollPane panel = new GraphZoomScrollPane(vv);
@@ -168,6 +170,10 @@ public class NetVisualization extends JPanel {
 
 
 	}
+	
 
+	public VisualizationViewer<PetrinetObject, Arc> getViewer() {
+		return vv;
+	}
 
 }

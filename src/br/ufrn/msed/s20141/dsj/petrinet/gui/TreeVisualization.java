@@ -224,5 +224,9 @@ public class TreeVisualization extends JPanel {
 			return true;
 		}
     }
+    
+    public VisualizationViewer<Node, Integer> getViewer() {
+		return vv;
+	}
 
 }

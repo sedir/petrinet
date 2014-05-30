@@ -5,16 +5,21 @@ import java.awt.Dimension;
 import java.awt.EventQueue;
 import java.awt.FileDialog;
 import java.awt.Frame;
+import java.awt.Graphics2D;
 import java.awt.GridBagConstraints;
 import java.awt.GridBagLayout;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
+import java.awt.image.BufferedImage;
 import java.io.File;
 import java.io.PrintWriter;
 
+import javax.imageio.ImageIO;
 import javax.swing.BorderFactory;
+import javax.swing.ImageIcon;
 import javax.swing.JApplet;
 import javax.swing.JButton;
+import javax.swing.JFileChooser;
 import javax.swing.JFrame;
 import javax.swing.JOptionPane;
 import javax.swing.JPanel;
@@ -22,6 +27,7 @@ import javax.swing.JScrollPane;
 import javax.swing.JTextArea;
 import javax.swing.border.EmptyBorder;
 
+import edu.uci.ics.jung.visualization.VisualizationViewer;
 import br.ufrn.msed.s20141.dsj.petrinet.models.Petrinet;
 import br.ufrn.msed.s20141.dsj.petrinet.util.MarkupProcessor;
 
@@ -39,6 +45,10 @@ public class PetriUI extends JApplet implements ActionListener {
 	private JButton runButton;
 	private JButton loadButton;
 	private JButton saveButton;
+	private JButton saveTreeImageButton;
+	private JButton saveNetImageButton;
+	private NetVisualization net;
+	private TreeVisualization tree;
 
 	/**
 	 * Launch the application.
@@ -65,7 +75,7 @@ public class PetriUI extends JApplet implements ActionListener {
 	 */
 	public PetriUI() {
 		//		petrinet = new MarkupProcessor(new File("rede.txt")).getPetrinet();
-		
+
 		// Cria Petrinet vazia
 		petrinet = new Petrinet();
 
@@ -79,22 +89,26 @@ public class PetriUI extends JApplet implements ActionListener {
 
 		// Cria e encaixa as visualizacoes (Rede de Petri e Arvore de Cobertura)
 		contentPane.add(visualizationPane, BorderLayout.CENTER);
-		visualizationPane.add(new NetVisualization(petrinet),BorderLayout.WEST);
-		visualizationPane.add(new TreeVisualization(petrinet),BorderLayout.CENTER);
+		visualizationPane.add(net = new NetVisualization(petrinet),BorderLayout.WEST);
+		visualizationPane.add(tree = new TreeVisualization(petrinet),BorderLayout.CENTER);
 
 		// Cria painel de componentes de controle no rodape (SOUTH)
 		southPane = new JPanel(new GridBagLayout());
 		GridBagConstraints c = new GridBagConstraints();
 		c.fill = GridBagConstraints.BOTH;
 
-		
+
 		// Define os controles e liga-os com listeners
-		runButton = new JButton("Carregar rede");
+		runButton = new JButton("Carregar rede", new ImageIcon(this.getClass().getResource("images/load.png")));
 		runButton.addActionListener(this);
-		loadButton = new JButton("Abrir arquivo");
+		loadButton = new JButton("Abrir arquivo", new ImageIcon(this.getClass().getResource("images/open.png")));
 		loadButton.addActionListener(this);
-		saveButton = new JButton("Salvar arquivo");
+		saveButton = new JButton("Salvar arquivo", new ImageIcon(this.getClass().getResource("images/save.png")));
 		saveButton.addActionListener(this);
+		saveNetImageButton = new JButton("Exportar Rede de Petri", new ImageIcon(this.getClass().getResource("images/export.png")));
+		saveNetImageButton.addActionListener(this);
+		saveTreeImageButton = new JButton("Exportar Arvore de Cobertura", new ImageIcon(this.getClass().getResource("images/export.png")));
+		saveTreeImageButton.addActionListener(this);
 
 		scriptTextPane = new JTextArea();
 		scriptTextPane.setWrapStyleWord(true);
@@ -108,21 +122,40 @@ public class PetriUI extends JApplet implements ActionListener {
 
 		// Define posicionamento dos controles
 		southPane.setPreferredSize(new Dimension(southPane.getWidth(), 150));
-		c.weightx = 0.99;
-		c.gridheight = 3;
-		southPane.add(scriptScroller, c);
+		
+
 		c.gridheight = 1;
 		c.weightx = 0.01;
+		c.gridx = 0;
 		c.gridy = 0;
-		c.weighty = 0.33;
+		c.weighty = 0.20;
 		southPane.add(loadButton, c);
-		c.gridx = 1;
+		c.gridx = 0;
 		c.gridy = 1;
 		southPane.add(saveButton, c);
-		c.gridx = 1;
+		c.weighty = 0.60;
+		c.gridx = 0;
 		c.gridy = 2;
 		southPane.add(runButton, c);
-
+		
+		
+		c.gridx = 1;
+		c.gridy = 0;
+		c.weightx = 0.98;
+		c.gridheight = 3;
+		southPane.add(scriptScroller, c);
+		
+		c.gridheight = 2;
+		c.gridx = 2;
+		c.gridy = 0;
+		c.weightx = 0.01;
+		c.weighty = 0.01;
+		southPane.add(saveNetImageButton, c);
+		c.weighty = 0.99;
+		c.gridy = 2;
+		southPane.add(saveTreeImageButton, c);
+		
+		
 		contentPane.add(southPane,BorderLayout.SOUTH);
 		this.invalidate();
 		this.validate();
@@ -150,8 +183,8 @@ public class PetriUI extends JApplet implements ActionListener {
 					visualizationPane.removeAll();
 					this.invalidate();
 
-					visualizationPane.add(new NetVisualization(petrinet),BorderLayout.WEST);
-					visualizationPane.add(new TreeVisualization(petrinet),BorderLayout.CENTER);
+					visualizationPane.add(net = new NetVisualization(petrinet),BorderLayout.WEST);
+					visualizationPane.add(tree = new TreeVisualization(petrinet),BorderLayout.CENTER);
 					this.invalidate();
 					this.validate();
 				} catch (Exception e1) {
@@ -167,8 +200,8 @@ public class PetriUI extends JApplet implements ActionListener {
 
 				visualizationPane.removeAll();
 
-				visualizationPane.add(new NetVisualization(petrinet),BorderLayout.WEST);
-				visualizationPane.add(new TreeVisualization(petrinet),BorderLayout.CENTER);
+				visualizationPane.add(net = new NetVisualization(petrinet),BorderLayout.WEST);
+				visualizationPane.add(tree = new TreeVisualization(petrinet),BorderLayout.CENTER);
 				this.invalidate();
 				this.validate();
 			} catch (Exception e1) {
@@ -195,8 +228,67 @@ public class PetriUI extends JApplet implements ActionListener {
 				} catch (Exception e1) {
 					JOptionPane.showMessageDialog(null, e1.getMessage(), "Erro", JOptionPane.ERROR_MESSAGE);
 				}
-
 		}
+		else if (e.getSource() == saveNetImageButton){
+			Frame parent = new Frame();
+			FileDialog fd = new FileDialog(parent, "Salvar imagem da Rede de Petri",
+					FileDialog.SAVE);
+			fd.setVisible(true);
+
+			File selectedItem = fd.getFiles()[0];
+
+			if (selectedItem != null)
+				try {
+					writeJPEGImage(selectedItem, true);
+					JOptionPane.showMessageDialog(null, "Arquivo salvo com sucesso", "Aviso", JOptionPane.INFORMATION_MESSAGE);
+				} catch (Exception e1) {
+					JOptionPane.showMessageDialog(null, e1.getMessage(), "Erro", JOptionPane.ERROR_MESSAGE);
+				}
+		}
+		else if (e.getSource() == saveTreeImageButton){
+			Frame parent = new Frame();
+			FileDialog fd = new FileDialog(parent, "Salvar imagem da Arvore de Cobertura",
+					FileDialog.SAVE);
+			fd.setVisible(true);
+
+			File selectedItem = fd.getFiles()[0];
+
+			if (selectedItem != null)
+				try {
+					writeJPEGImage(selectedItem, false);
+					JOptionPane.showMessageDialog(null, "Arquivo salvo com sucesso", "Aviso", JOptionPane.INFORMATION_MESSAGE);
+				} catch (Exception e1) {
+					JOptionPane.showMessageDialog(null, e1.getMessage(), "Erro", JOptionPane.ERROR_MESSAGE);
+				}
+		}
+
+
+
+
 	}
+
+	public void writeJPEGImage(File file, boolean isNet) {
+		VisualizationViewer vv;
+		
+		if (isNet)
+			vv = this.net.getViewer();
+		else
+			vv = this.tree.getViewer();
+		
+        int width = vv.getWidth();
+        int height = vv.getHeight();
+
+        BufferedImage bi = new BufferedImage(width, height,
+                BufferedImage.TYPE_INT_RGB);
+        Graphics2D graphics = bi.createGraphics();
+        vv.paint(graphics);
+        graphics.dispose();
+        
+        try {
+            ImageIO.write(bi, "jpeg", file);
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+    }
 
 }
