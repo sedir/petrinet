@@ -48,6 +48,7 @@ public class PetriUI extends JApplet implements ActionListener {
 	private JButton saveNetImageButton;
 	private NetVisualization net;
 	private TreeVisualization tree;
+	private StatusPane statusPane;
 
 	/**
 	 * Launch the application.
@@ -91,6 +92,9 @@ public class PetriUI extends JApplet implements ActionListener {
 		visualizationPane.add(net = new NetVisualization(petrinet),BorderLayout.WEST);
 		visualizationPane.add(tree = new TreeVisualization(petrinet),BorderLayout.CENTER);
 
+		statusPane = new StatusPane();
+		statusPane.reset();
+
 		// Cria painel de componentes de controle no rodape (SOUTH)
 		southPane = new JPanel(new GridBagLayout());
 		GridBagConstraints c = new GridBagConstraints();
@@ -119,9 +123,11 @@ public class PetriUI extends JApplet implements ActionListener {
 				BorderFactory.createTitledBorder("PetriMarkup"));
 		scriptScroller.setViewportView(scriptTextPane);
 
+
+
 		// Define posicionamento dos controles
 		southPane.setPreferredSize(new Dimension(southPane.getWidth(), 150));
-		
+
 
 		c.gridheight = 1;
 		c.weightx = 0.01;
@@ -136,16 +142,23 @@ public class PetriUI extends JApplet implements ActionListener {
 		c.gridx = 0;
 		c.gridy = 2;
 		southPane.add(runButton, c);
-		
-		
+
+
 		c.gridx = 1;
 		c.gridy = 0;
 		c.weightx = 0.98;
 		c.gridheight = 3;
 		southPane.add(scriptScroller, c);
-		
-		c.gridheight = 2;
+
+
+		c.weightx = 0.01;
+		c.gridheight = 3;
 		c.gridx = 2;
+		c.gridy = 0;
+		southPane.add(statusPane, c);
+
+		c.gridheight = 2;
+		c.gridx = 3;
 		c.gridy = 0;
 		c.weightx = 0.01;
 		c.weighty = 0.01;
@@ -153,8 +166,8 @@ public class PetriUI extends JApplet implements ActionListener {
 		c.weighty = 0.99;
 		c.gridy = 2;
 		southPane.add(saveTreeImageButton, c);
-		
-		
+
+
 		contentPane.add(southPane,BorderLayout.SOUTH);
 		this.invalidate();
 		this.validate();
@@ -268,26 +281,26 @@ public class PetriUI extends JApplet implements ActionListener {
 
 	public void writeJPEGImage(File file, boolean isNet) {
 		VisualizationViewer vv;
-		
+
 		if (isNet)
 			vv = this.net.getViewer();
 		else
 			vv = this.tree.getViewer();
-		
-        int width = vv.getWidth();
-        int height = vv.getHeight();
 
-        BufferedImage bi = new BufferedImage(width, height,
-                BufferedImage.TYPE_INT_RGB);
-        Graphics2D graphics = bi.createGraphics();
-        vv.paint(graphics);
-        graphics.dispose();
-        
-        try {
-            ImageIO.write(bi, "jpeg", file);
-        } catch (Exception e) {
-            e.printStackTrace();
-        }
-    }
+		int width = vv.getWidth();
+		int height = vv.getHeight();
+
+		BufferedImage bi = new BufferedImage(width, height,
+				BufferedImage.TYPE_INT_RGB);
+		Graphics2D graphics = bi.createGraphics();
+		vv.paint(graphics);
+		graphics.dispose();
+
+		try {
+			ImageIO.write(bi, "jpeg", file);
+		} catch (Exception e) {
+			e.printStackTrace();
+		}
+	}
 
 }
