@@ -121,7 +121,7 @@ public class StatusPane extends JPanel {
 		this.petrinet = petrinet;
 		setBlockingStates(petrinet.hasDeadlock());
 		//TODO definir setConservability
-		//TODO definir setNonLimitedStates
+		setNonLimitedStates(petrinet.hasBounded());
 		
 	}
 }
