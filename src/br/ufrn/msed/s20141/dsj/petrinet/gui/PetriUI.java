@@ -190,15 +190,7 @@ public class PetriUI extends JApplet implements ActionListener {
 				try {
 					MarkupProcessor mp = new MarkupProcessor(selectedItem);
 					scriptTextPane.setText(mp.getScript());
-					petrinet = mp.getPetrinet();
-
-					visualizationPane.removeAll();
-					this.invalidate();
-
-					visualizationPane.add(net = new NetVisualization(petrinet),BorderLayout.WEST);
-					visualizationPane.add(tree = new TreeVisualization(petrinet),BorderLayout.CENTER);
-					this.invalidate();
-					this.validate();
+					setPetrinet(mp.getPetrinet());
 				} catch (Exception e1) {
 					JOptionPane.showMessageDialog(null, e1.getMessage(), "Erro", JOptionPane.ERROR_MESSAGE);
 				}
@@ -208,14 +200,7 @@ public class PetriUI extends JApplet implements ActionListener {
 		// Botao Carregar Rede
 		else if (e.getSource() == runButton){
 			try {
-				petrinet = new MarkupProcessor(scriptTextPane.getText()).getPetrinet();
-
-				visualizationPane.removeAll();
-
-				visualizationPane.add(net = new NetVisualization(petrinet),BorderLayout.WEST);
-				visualizationPane.add(tree = new TreeVisualization(petrinet),BorderLayout.CENTER);
-				this.invalidate();
-				this.validate();
+				setPetrinet(new MarkupProcessor(scriptTextPane.getText()).getPetrinet());
 			} catch (Exception e1) {
 				JOptionPane.showMessageDialog(null, e1.getMessage(), "Erro", JOptionPane.ERROR_MESSAGE);
 
@@ -277,6 +262,16 @@ public class PetriUI extends JApplet implements ActionListener {
 
 
 
+	}
+	
+	private void setPetrinet(Petrinet petrinet){
+		this.petrinet = petrinet;
+		visualizationPane.removeAll();
+		visualizationPane.add(net = new NetVisualization(petrinet),BorderLayout.WEST);
+		visualizationPane.add(tree = new TreeVisualization(petrinet),BorderLayout.CENTER);
+		statusPane.setPetrinet(petrinet);
+		this.invalidate();
+		this.validate();
 	}
 
 	public void writeJPEGImage(File file, boolean isNet) {
