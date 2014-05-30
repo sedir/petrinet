@@ -37,6 +37,7 @@ import br.ufrn.msed.s20141.dsj.petrinet.models.StateTree;
 import edu.uci.ics.jung.algorithms.layout.PolarPoint;
 import edu.uci.ics.jung.algorithms.layout.RadialTreeLayout;
 import edu.uci.ics.jung.algorithms.layout.TreeLayout;
+import edu.uci.ics.jung.graph.DelegateForest;
 import edu.uci.ics.jung.graph.DelegateTree;
 import edu.uci.ics.jung.graph.DirectedGraph;
 import edu.uci.ics.jung.graph.DirectedSparseMultigraph;
@@ -80,8 +81,11 @@ public class TreeVisualization extends JPanel {
 	public TreeVisualization(Petrinet petrinet) {
 		super(new BorderLayout());
 		this.petrinet = petrinet;
-		this.graph = new StateTree(petrinet).getGraphModelRepresentation();
-		
+		if (this.petrinet.getPlaces().size()>1)
+			this.graph = this.petrinet.getStateTree().getGraphModelRepresentation();
+		else
+			this.graph = new DelegateForest<Node,Integer>();
+
 		
 		// Definicao de layout
         treeLayout = new TreeLayout<Node, Integer>(this.graph);
