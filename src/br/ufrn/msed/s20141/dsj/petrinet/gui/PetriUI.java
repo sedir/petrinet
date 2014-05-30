@@ -19,7 +19,6 @@ import javax.swing.BorderFactory;
 import javax.swing.ImageIcon;
 import javax.swing.JApplet;
 import javax.swing.JButton;
-import javax.swing.JFileChooser;
 import javax.swing.JFrame;
 import javax.swing.JOptionPane;
 import javax.swing.JPanel;
@@ -27,9 +26,9 @@ import javax.swing.JScrollPane;
 import javax.swing.JTextArea;
 import javax.swing.border.EmptyBorder;
 
-import edu.uci.ics.jung.visualization.VisualizationViewer;
 import br.ufrn.msed.s20141.dsj.petrinet.models.Petrinet;
 import br.ufrn.msed.s20141.dsj.petrinet.util.MarkupProcessor;
+import edu.uci.ics.jung.visualization.VisualizationViewer;
 
 public class PetriUI extends JApplet implements ActionListener {
 
@@ -117,7 +116,7 @@ public class PetriUI extends JApplet implements ActionListener {
 		JScrollPane scriptScroller = new JScrollPane();   
 		scriptScroller.setPreferredSize(new Dimension(scriptScroller.getWidth(),150));
 		scriptScroller.setBorder(
-				BorderFactory.createTitledBorder("PetriMark"));
+				BorderFactory.createTitledBorder("PetriMarkup"));
 		scriptScroller.setViewportView(scriptTextPane);
 
 		// Define posicionamento dos controles
