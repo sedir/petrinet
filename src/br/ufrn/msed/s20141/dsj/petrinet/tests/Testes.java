@@ -20,7 +20,8 @@ public class Testes {
     public void setup(){
 		try {
 			petrinet1 = new MarkupProcessor(this.getNet1()).getPetrinet();
-			petrinet2 = new MarkupProcessor(this.getNet1()).getPetrinet();
+			petrinet2 = new MarkupProcessor(this.getNet2()).getPetrinet();
+			
 		} catch (NumberFormatException | IOException e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
@@ -51,6 +52,14 @@ public class Testes {
 	@Test
 	public void testnet2_ha_estado_bloqueante() {
 		assertEquals(true, petrinet2.hasDeadlock());
+	}
+	@Test
+	public void testenet1_ha_estado_limitado() {
+		assertEquals(true, petrinet1.hasBounded());
+	}
+	@Test
+	public void testenet2_ha_estado_nao_limitado() {
+		assertEquals(false, petrinet2.hasBounded());
 	}
 	@Test
 	public void testnet1_valida_transicoes_ativas() {

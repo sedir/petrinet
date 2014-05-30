@@ -312,7 +312,18 @@ public class Node {
 	public boolean equalState(Node node){
 		return equalState(node.currentState);
 	}
-
+	/**
+	 * Usado para indicar que há um estado com 
+	 * marcação ilimitada, isto é, com o símobo w.
+	 * @return
+	 */
+	public boolean hasTokenUnbounded() {
+		for (double d : currentState) {
+			if (d==-1)
+				return true;
+		} 		
+		return false;
+	}
 	@Override
 	public String toString() {
 		StringBuilder strb = new StringBuilder();

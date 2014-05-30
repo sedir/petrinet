@@ -119,7 +119,7 @@ public class StatusPane extends JPanel {
 	
 	public void setPetrinet(Petrinet petrinet) {
 		this.petrinet = petrinet;
-		setBlockingStates(petrinet.stateTree().getBlockingStates().size()>0);
+		setBlockingStates(petrinet.getStateTree().getBlockingStates().size()>0);
 		
 	}
 }

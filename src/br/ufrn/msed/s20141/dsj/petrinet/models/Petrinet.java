@@ -153,7 +153,20 @@ extends PetrinetObject {
     		return true;
     	return false;
     }
-    
+    /**
+     * Uma condição necessária e suficiente para que uma 
+     * rede de Petri seja limitada é que o símbolo w
+     * nunca aparece em uma árvore de cobertura.
+     * @return
+     */
+    public boolean hasBounded() {
+		List<Node> lista = getStateTree().getNodeList();
+		for (Node node : lista) {
+			if (node.hasTokenUnbounded())
+				return false;
+		}
+    	return true;
+    }
     public boolean existTransition(String name){
     	for (Transition t : transitions) {
             if (t.getName().equalsIgnoreCase(name))
