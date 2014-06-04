@@ -152,8 +152,15 @@ extends PetrinetObject {
     public boolean hasPlaceReachable(double[] states) {
 		List<Node> lista = getStateTree().getNodeList();
 		for (Node node : lista) {
+//			System.out.println(node);
 			if (Arrays.equals(states, node.currentState))
 				return true;
+		}
+    	return false;
+    }
+    public boolean getTransitions(double[] states) {
+		List<Node> lista = getStateTree().getNodeList();
+		for (Node node : lista) {
 		}
     	return false;
     }
