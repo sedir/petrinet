@@ -1,10 +1,15 @@
 package br.ufrn.msed.s20141.dsj.petrinet.models;
 
+import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 
+import org.ejml.data.DenseMatrix64F;
+import org.ejml.ops.CommonOps;
+
 import br.ufrn.msed.s20141.dsj.petrinet.models.Arc.Direction;
+import br.ufrn.msed.s20141.dsj.petrinet.util.MarkupProcessor;
 import edu.uci.ics.jung.graph.DirectedSparseMultigraph;
 import edu.uci.ics.jung.graph.util.EdgeType;
 
@@ -158,6 +163,26 @@ extends PetrinetObject {
 		}
     	return false;
     }
+	public double[] getFiringCounterVector(double x0 [], double x[])  {
+
+		DenseMatrix64F A = new DenseMatrix64F(this.incidenceMatrix());
+
+		DenseMatrix64F dx0 = new DenseMatrix64F(new double [][] {x0} );
+		DenseMatrix64F dx = new DenseMatrix64F(new double [][] {x} );
+		DenseMatrix64F db = new DenseMatrix64F(A.numCols, 1);
+		CommonOps.sub(dx, dx0, db); // db = dx - dx0
+		
+		DenseMatrix64F result = new DenseMatrix64F(A.numRows, 1);
+		CommonOps.mult(A, db, result);
+		double [] v= result.getData();
+//		for(int i= 0; i<v.length;i++)
+//		{
+//			if (v[i] < 0)
+//				v[i]=0;
+//		}
+		return v;
+		
+	}	
     public boolean getTransitions(double[] states) {
 		List<Node> lista = getStateTree().getNodeList();
 		for (Node node : lista) {

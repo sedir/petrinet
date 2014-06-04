@@ -4,6 +4,8 @@ import static org.junit.Assert.*;
 
 import java.io.IOException;
 
+import javax.vecmath.SingularMatrixException;
+
 import org.ejml.alg.dense.linsol.svd.SolvePseudoInverseSvd;
 import org.ejml.alg.dense.mult.MatrixDimensionException;
 import org.ejml.data.DenseMatrix64F;
@@ -74,13 +76,31 @@ public class Testes {
 
 	}
 
-	@Test
-	public void test_pseudo_inversa() {
-		double [][] matrix = {{1.000000, 0.000000, 0.000000, 0.000000, 2.000000}, 
-				{0.000000, 0.000000, 3.000000, 0.000000, 0.000000}, 
-				{0.000000, 0.000000, 0.000000, 0.000000, 0.000000}, 
-				{0.000000, 4.000000, 0.000000, 0.000000, 0.000000}
-		};
+	public DenseMatrix64F matrix_pseudoinverse(double [][] matrix) {
+		DenseMatrix64F A = new DenseMatrix64F(matrix);
+		DenseMatrix64F Apseudo = new DenseMatrix64F(A.numCols, A.numRows);
+
+		try {
+			CommonOps.pinv(A, Apseudo);
+		}catch (MatrixDimensionException e) {
+			throw new MatrixDimensionException();
+		}
+		return Apseudo;   		
+	}
+
+	//	@Test
+	//	public void test_pseudo_inversa() {
+	public static void main(String[] args) {
+		//		double [][] matrix = {{1.000000, 0.000000, 0.000000, 0.000000, 2.000000}, 
+		//				{0.000000, 0.000000, 3.000000, 0.000000, 0.000000}, 
+		//				{0.000000, 0.000000, 0.000000, 0.000000, 0.000000}, 
+		//				{0.000000, 4.000000, 0.000000, 0.000000, 0.000000}
+		//		};
+		double [][] matrix = {{2.0, 3.0},
+				{3.0, 1.0},
+				{4.0, 0.0}
+		};		
+
 		DenseMatrix64F A = new DenseMatrix64F(matrix);
 		DenseMatrix64F Apseudo = new DenseMatrix64F(A.numCols, A.numRows);
 
@@ -89,7 +109,11 @@ public class Testes {
 			System.out.println(Apseudo);
 		}catch (MatrixDimensionException e) {
 			System.out.println(e);
+			throw new RuntimeException(e);
 		}
+
+
+
 
 		System.out.println("*****************Original Matrix****************");
 		System.out.println(A);
@@ -97,80 +121,76 @@ public class Testes {
 		System.out.println("Product of [V] * [W+] * [U-Transpose]");
 		System.out.println(Apseudo);     
 
-	}
 
-	public void testnet_firing_couter_vector() throws NumberFormatException, IOException {
-
-		Petrinet pn = new MarkupProcessor(this.getNetFig416()).getPetrinet();
-
-		DenseMatrix64F A = new DenseMatrix64F(pn.incidenceMatrix());
-
-		DenseMatrix64F x0 = new DenseMatrix64F(new double [][] {{1.0, 0.0, 0.0, 0.0}} );
-		DenseMatrix64F x = new DenseMatrix64F(new double [][] {{0.0, 0.0, 0.0, 1.0}} );
-
-		DenseMatrix64F b = new DenseMatrix64F(A.numCols, 1);
-
-		CommonOps.sub(x, x0, b); // c = x - x0
-		System.out.println("-------------------------");
-		System.out.println(b);
-		System.out.println("-------------------------");
-
-		DenseMatrix64F vx = new DenseMatrix64F(A.numRows, 1); //b
-
-		LinearSolver<DenseMatrix64F> solver = LinearSolverFactory.leastSquares(A.numRows, A.numCols);
+		DenseMatrix64F x = new DenseMatrix64F(A.numCols,1);
+		DenseMatrix64F b = new DenseMatrix64F(A.numRows,1);		
 
 
+		//		CommonOps.mult(Apseudo,b,x);
+		//		System.out.println("Matrix b:");
+		//		System.out.println(b);
+		//		System.out.println("Matrix x:");
+		//		System.out.println(x);
 
-		boolean solve = false;
+		//		/ compute b = (X^T*X)^-1 * X^T*Y 
+		//		LinearSolver<DenseMatrix64F> solver=new SolvePseudoInverseSvd(A.numRows, A.numCols);
+		LinearSolver<DenseMatrix64F> solver = LinearSolverFactory.pseudoInverse(true);
+		if( solver.modifiesA())
+			A = A.copy();
 
 		if( !solver.setA(A) ) {
-			//é dita singular quando não admite uma inversa.
-			//Se uma matriz A\, é singular, então o problema Ax=b\, ou não possui solução ou possui infinitas soluções.
-			System.out.println("Matriz singular");
-		}else if( solver.quality() <= 1e-8 ) {
-			System.out.println("aproximadamente matriz singular");
-		} else {
-			solver.solve(b,vx);	
-			solve = true;
+			throw new IllegalArgumentException("Singular matrix");
+		}		
+
+		try {
+			solver.solve(b,x);
+			System.out.println("Matrix b:");
+			System.out.println(b);
+			System.out.println("Matrix x:");
+			System.out.println(x);
+
+		}catch (MatrixDimensionException e) {
+			throw new IllegalArgumentException("MatrixDimensionException");
+		}	
+	}
+	public static double[] mult(double[][] A, double[] v)
+	{
+		int m = A.length;
+		int n = A[0].length;
+		
+		double[] resultado = new double[m];
+
+		for(int i = 0; i< m; i++)
+		{
+			double aux = 0;
+			for(int j = 0; j< n; j++)
+			{   
+				aux = aux + A[i][j]*v[j];
+			}
+			if(aux > 0)
+			{
+				resultado[i] = aux;
+			}
+			else
+			{
+				resultado[i] = 0;
+			}
 		}
+		return resultado;
+	}
+	@Test
+	public void testnet_firing_couter_vector() throws NumberFormatException, IOException {
+		Petrinet pn = new MarkupProcessor(this.getNetFig416()).getPetrinet();
+		double[] resultado = pn.getFiringCounterVector(new double [] {1.0, 0.0, 0.0, 0.0}, new double [] {0.0, 0.0, 0.0, 1.0});
+//		assertArrayEquals(new double [] {1.0, 1.0, 0.0}, resultado,0);
+//		resultado = pn.getFiringCounterVector(new double [] {1.0, 0.0, 0.0, 0.0}, new double [] {0.0, 1.0, 0.0, 0.0});
 
-		//O sistema linear não foi resolvido.
-		if (!solve) {
-			//SolvePseudoInverseSvd solver2 = new SolvePseudoInverseSvd(A.numRows, A.numCols)
-			//x=inv(A^T * A) * A^T * b
+		for(int i= 0; i<resultado.length;i++)
+		{
+			System.out.println(resultado[i]);
 		}
-
-		//aplicação da SVD serve para aplicar a pseudo-inversa.
-		//decomposição em valores singulares
-		SingularValueDecomposition<DenseMatrix64F> svd = DecompositionFactory.svd(A.numRows,A.numCols,true,true,false);
-		//[U,S,V] = svd(A)	 DecompositionFactory.svd(A.numRows,A.numCols,true,true,false)
-		//S = svd(A)	 DecompositionFactory.svd(A.numRows,A.numCols,false,false,true)
-
-		if( !svd.decompose(A) )
-			throw new RuntimeException("SVD failed");
-
-		DenseMatrix64F U = svd.getU(null,false);
-		DenseMatrix64F W = svd.getW(null);
-		DenseMatrix64F V = svd.getV(null,false);
-
-
-
-
-		DenseMatrix64F result = new DenseMatrix64F(A.numRows,A.numCols); 
-		//solução: x = pseudoinverse(A)*b   //matlab x = pinv(A)*b
-
-
-		SingularOps.nullSpace(svd, result, 0.00001);
-
-		System.out.println(result);
-
-		DenseMatrix64F r = new DenseMatrix64F(A.numCols,1); 
-		SingularOps.nullVector(svd, true, r);
-		System.out.println(r);
-
-		System.out.println(A);
-	}	
-
+	}
+//	@Test
 	public void testnet_conservability() throws NumberFormatException, IOException {
 
 		//Petrinet pn = new MarkupProcessor(this.getNetNoConservative()).getPetrinet();
