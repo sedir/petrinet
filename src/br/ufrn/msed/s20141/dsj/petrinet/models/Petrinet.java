@@ -70,30 +70,40 @@ extends PetrinetObject {
         places.add(p);
         return p;
     }
-    
-    public Arc arc(String name, Place p, Transition t) {
-        Arc arc = new Arc(name, p, t);
-        arcs.add(arc);
-        return arc;
-    }
-    
-    public Arc arc(String name, Transition t, Place p) {
-        Arc arc = new Arc(name, t, p);
-        arcs.add(arc);
-        return arc;
-    }
-    
-    public Arc arc(Place p, Transition t) {
-        Arc arc = new Arc("", p, t);
-        arcs.add(arc);
-        return arc;
-    }
-    
     public Arc arc(Transition t, Place p) {
-        Arc arc = new Arc("", t, p);
+    	return this.arc("", t, p,1);
+    }
+    public Arc arc(String name, Transition t, Place p) {
+        return this.arc(name, t, p,1);
+    }   
+    public Arc arc(Transition t, Place p, int weight) {
+    	return this.arc("", t, p, weight);
+    }
+    public Arc arc(String name, Transition t, Place p,int weight) {
+        Arc arc = new Arc(name, t, p,weight);
         arcs.add(arc);
         return arc;
     }
+    public Arc arc(Place p, Transition t) {
+        return this.arc("", p,t,1);
+    } 
+    public Arc arc(String name, Place p, Transition t) {
+    	return this.arc(name, p,t,1);
+    }
+    public Arc arc(Place p, Transition t,int weight) {
+        return this.arc("", p,t,weight);
+    } 
+    public Arc arc(String name, Place p, Transition t, int weight) {
+        Arc arc = new Arc(name, p, t,weight);
+        arcs.add(arc);
+        return arc;
+    }
+   
+
+
+
+    
+
     
     public InhibitorArc inhibitor(String name, Place p, Transition t) {
         InhibitorArc i = new InhibitorArc(name, p, t);
@@ -111,8 +121,16 @@ extends PetrinetObject {
         }
         sb.append("---Places---").append(nl);
         for (Place p : places) {
-            sb.append(p).append(nl);
+            sb.append(p+":"+p.getTokens()).append(nl);
         }
+        sb.append("---Arc---").append(nl);
+        for (Arc a : arcs) {
+        	if (a.direction == Direction.TRANSITION_TO_PLACE) {
+        		sb.append(a.getTransition().getName() + "->" + a.getPlace().getName() + ":" + a.getWeight()).append(nl);
+        	} else {
+        		sb.append(a.getPlace().getName() + "->" + a.getTransition().getName() + ":" + a.getWeight() ).append(nl);
+        	}
+        }        
         return sb.toString();
     }
 

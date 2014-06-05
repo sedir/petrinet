@@ -38,12 +38,16 @@ public class MarkupProcessor {
 				}
 			} else if (command[0].equalsIgnoreCase("t")){
 				petrinet.getTransition(command[1]);
-			} else if (command[0].equalsIgnoreCase("a") && command.length == 3){
+			} else if (command[0].equalsIgnoreCase("a") && command.length >= 3 && command.length <= 4){
+				int weight = 1;
+				if (command.length == 4){
+					weight = Integer.parseInt(command[3]);
+				}
 				if (petrinet.existPlace(command[1]) && petrinet.existTransition(command[2])){
-					petrinet.arc(petrinet.getPlace(command[1]),petrinet.getTransition(command[2]));
+					petrinet.arc(petrinet.getPlace(command[1]),petrinet.getTransition(command[2]),weight);
 				}
 				if (petrinet.existTransition(command[1]) && petrinet.existPlace(command[2])){
-					petrinet.arc(petrinet.getTransition(command[1]),petrinet.getPlace(command[2]));
+					petrinet.arc(petrinet.getTransition(command[1]),petrinet.getPlace(command[2]),weight);
 				}
 			}
 		}

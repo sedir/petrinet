@@ -43,20 +43,28 @@ extends PetrinetObject {
         public abstract void fire(Place p, int weight);
     }
     
-    private Arc(String name, Direction d, Place p, Transition t) {
+    private Arc(String name, Direction d, Place p, Transition t,int weight) {
         super(name);
         this.direction = d;
         this.place = p;
         this.transition = t;
+        if (weight>0)
+        	this.weight = weight;
     }
-
     protected Arc(String name, Place p, Transition t) {
-        this(name, Direction.PLACE_TO_TRANSITION, p, t);
+        this(name, Direction.PLACE_TO_TRANSITION, p, t,1);
+        t.addIncoming(this);
+    }  
+    protected Arc(String name, Place p, Transition t,int weight) {
+        this(name, Direction.PLACE_TO_TRANSITION, p, t,weight);
         t.addIncoming(this);
     }
-
     protected Arc(String name, Transition t, Place p) {
-        this(name, Direction.TRANSITION_TO_PLACE, p, t);
+        this(name, Direction.TRANSITION_TO_PLACE, p, t,1);
+        t.addOutgoing(this);
+    }
+    protected Arc(String name, Transition t, Place p,int weight) {
+        this(name, Direction.TRANSITION_TO_PLACE, p, t,weight);
         t.addOutgoing(this);
     }
 
