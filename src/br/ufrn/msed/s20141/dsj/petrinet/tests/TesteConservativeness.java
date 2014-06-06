@@ -3,6 +3,9 @@ package br.ufrn.msed.s20141.dsj.petrinet.tests;
 import static org.junit.Assert.*;
 
 import java.io.IOException;
+import java.util.ArrayList;
+import java.util.Iterator;
+import java.util.List;
 
 import javax.vecmath.SingularMatrixException;
 
@@ -20,8 +23,11 @@ import org.ejml.simple.SimpleSVD;
 import org.junit.Before;
 import org.junit.Test;
 
+import Jama.Matrix;
 import br.ufrn.msed.s20141.dsj.petrinet.models.Petrinet;
 import br.ufrn.msed.s20141.dsj.petrinet.models.Transition;
+import br.ufrn.msed.s20141.dsj.petrinet.util.FourierMotzkin;
+import br.ufrn.msed.s20141.dsj.petrinet.util.FourierMotzkinElimination;
 import br.ufrn.msed.s20141.dsj.petrinet.util.MarkupProcessor;
 
 public class TesteConservativeness {
@@ -29,197 +35,79 @@ public class TesteConservativeness {
 	private Petrinet petrinet1;
 	private Petrinet petrinet2;
 
-	@Test
-	public void test_invariants() throws NumberFormatException, IOException {
-		Petrinet pn = new MarkupProcessor(this.getNetFig21()).getPetrinet();
-		System.out.println(this.getNetFig21());
-		System.out.println("Matriz incidência");
+		@Test
+	public void testFourierMotzkinAlgorithm() throws NumberFormatException, IOException {
+
+		Petrinet pn = new MarkupProcessor(this.getNetFig213()).getPetrinet();
+		//		System.out.println(pn);
 		pn.printIncidenceMatrix();
-		System.out.println("Estado inicial");
-		pn.printStateVector();
-		
-		System.out.println(pn);
-	}
-	public void test_solution_system_linear() {
-		//		double [][] matrix = {{1.000000, 0.000000, 0.000000, 0.000000, 2.000000}, 
-		//				 {0.000000, 0.000000, 3.000000, 0.000000, 0.000000}, 
-		//				 {0.000000, 0.000000, 0.000000, 0.000000, 0.000000}, 
-		//				 {0.000000, 4.000000, 0.000000, 0.000000, 0.000000}
-		//				};
-		double [][] matrix = {{2.0, 3.0},
-				{3.0, 1.0},
-				{4.0, 0.0}
-		};
-
-		DenseMatrix64F A = new DenseMatrix64F(matrix);
-		SingularValueDecomposition<DenseMatrix64F> svd = DecompositionFactory.svd(A.numRows,A.numCols,true,true,false);
-		if( !svd.decompose(A) ) {
-			System.out.println("SVD failed");
-			throw new RuntimeException("SVD failed");
+		Matrix C = new Matrix(pn.incidenceMatrix());
+		C = C.transpose();
+		FourierMotzkinElimination farkas = new FourierMotzkinElimination(C.getArrayCopy());
+		double i[] = farkas.getInvariants();
+		System.out.println("Array Invariantes");
+		for (double d : i) {
+			System.out.print(d+", ");
 		}
 
-		DenseMatrix64F U = svd.getU(null,false);
-		DenseMatrix64F W = svd.getW(null);
-		DenseMatrix64F V = svd.getV(null,false); 
-
-		DenseMatrix64F result = new DenseMatrix64F(A.numRows, A.numCols); 
-
-		SingularOps.nullSpace(svd, result, 0.00001);
-		System.out.println("*****************Original Matrix****************");
-		System.out.println(A);
-		System.out.println("**************SingularOps.nullSpace *****************");
-		System.out.println("Matriz result");
-		System.out.println(result);
-
-
+		System.out.println(farkas);
 
 	}
-
-	public DenseMatrix64F matrix_pseudoinverse(double [][] matrix) {
-		DenseMatrix64F A = new DenseMatrix64F(matrix);
-		DenseMatrix64F Apseudo = new DenseMatrix64F(A.numCols, A.numRows);
-
-		try {
-			CommonOps.pinv(A, Apseudo);
-		}catch (MatrixDimensionException e) {
-			throw new MatrixDimensionException();
-		}
-		return Apseudo;   		
-	}
-
-	public void test_pseudo_inversa() {
-		//		double [][] matrix = {{1.000000, 0.000000, 0.000000, 0.000000, 2.000000}, 
-		//				{0.000000, 0.000000, 3.000000, 0.000000, 0.000000}, 
-		//				{0.000000, 0.000000, 0.000000, 0.000000, 0.000000}, 
-		//				{0.000000, 4.000000, 0.000000, 0.000000, 0.000000}
+//	@Test
+	public void testFourierMotzkinAlgorithm2() throws NumberFormatException, IOException {
+		//		double[][] C = { { -1, 1, 0, 0 },
+		//		{ 1, -1, 0, 0 },
+		//		{ -1, 1, -3, -3},
+		//		{0, 0, 1, -1},
+		//		{0, 0, -1, 1}
+		//};
+		//		double[][] C = { { -1, 1,  1, -1 },
+		//				{ 1, -1, -1, 1 },
+		//				{ 0, 0, 1, 0},
+		//				{1, 0, 0, -1},
+		//				{-1, 0, 0, 1}
 		//		};
-		double [][] matrix = {{2.0, 3.0},
-				{3.0, 1.0},
-				{4.0, 0.0}
-		};		
+		//		double[][] C = { { -1, 1,  0, 0 },
+		//				{ 1, -1, 0, 0 },
+		//				{ 0, 0, 1, -1},
+		//				{0, 0, -1, 1},
+		//				{0, 1, -1, 0}
+		//		};
+		double[][] C = { { -1, 1,  0 },
+				{ 1, -1, 0},
+				{ 0, 1, -1},
+				{0, -1, 1}
+		};
+		FourierMotzkinElimination farkas = new FourierMotzkinElimination(C);
 
-		DenseMatrix64F A = new DenseMatrix64F(matrix);
-		DenseMatrix64F Apseudo = new DenseMatrix64F(A.numCols, A.numRows);
-
-		try {
-			CommonOps.pinv(A, Apseudo);
-			System.out.println(Apseudo);
-		}catch (MatrixDimensionException e) {
-			System.out.println(e);
-			throw new RuntimeException(e);
+		double i[] = farkas.getInvariants();
+		System.out.println("Array Invariantes");
+		for (double d : i) {
+			System.out.print(d+", ");
 		}
-
-		System.out.println("*****************Original Matrix****************");
-		System.out.println(A);
-		System.out.println("***********This is the Pseudo-Inverse**********");
-		System.out.println("Product of [V] * [W+] * [U-Transpose]");
-		System.out.println(Apseudo);     
-
-
-		DenseMatrix64F x = new DenseMatrix64F(A.numCols,1);
-		DenseMatrix64F b = new DenseMatrix64F(A.numRows,1);		
-
-
-		//		CommonOps.mult(Apseudo,b,x);
-		//		System.out.println("Matrix b:");
-		//		System.out.println(b);
-		//		System.out.println("Matrix x:");
-		//		System.out.println(x);
-
-		//		/ compute b = (X^T*X)^-1 * X^T*Y 
-		//		LinearSolver<DenseMatrix64F> solver=new SolvePseudoInverseSvd(A.numRows, A.numCols);
-		LinearSolver<DenseMatrix64F> solver = LinearSolverFactory.pseudoInverse(true);
-		if( solver.modifiesA())
-			A = A.copy();
-
-		if( !solver.setA(A) ) {
-			throw new IllegalArgumentException("Singular matrix");
-		}		
-
-		try {
-			solver.solve(b,x);
-			System.out.println("Matrix b:");
-			System.out.println(b);
-			System.out.println("Matrix x:");
-			System.out.println(x);
-
-		}catch (MatrixDimensionException e) {
-			throw new IllegalArgumentException("MatrixDimensionException");
-		}	
+		System.out.println(farkas);
 
 	}
-	public static double[] mult(double[][] A, double[] v)
-	{
-		int m = A.length;
-		int n = A[0].length;
 
-		double[] resultado = new double[m];
 
-		for(int i = 0; i< m; i++)
-		{
-			double aux = 0;
-			for(int j = 0; j< n; j++)
-			{   
-				aux = aux + A[i][j]*v[j];
-			}
-			if(aux > 0)
-			{
-				resultado[i] = aux;
-			}
-			else
-			{
-				resultado[i] = 0;
-			}
-		}
-		return resultado;
+	@Test
+	public void test_proximo_estado() throws NumberFormatException, IOException {
+		Petrinet pn = new MarkupProcessor(this.getNetFig21()).getPetrinet();
+		double nextState[] =  pn.getNextState(new double[] {0.0, 3.0, 0.0},pn.getTransition("a"));
+		assertArrayEquals(new double [] {1.0, 2.0, 0.0}, nextState,0);
+
+		nextState =  pn.getNextState(new double[] {0.0, 3.0, 0.0},pn.getTransition("c"));
+		assertArrayEquals(new double [] {0.0, 0.0, 1.0}, nextState,0);
+
+		nextState =  pn.getNextState(new double[] {0.0, 3.0, 0.0},new double[] {2.0, 1.0, 0.0, 0.0});
+		assertArrayEquals(new double [] {1.0, 2.0, 0.0}, nextState,0);
+
+		pn = new MarkupProcessor(this.getNetFig24()).getPetrinet();
+		//a sequência abcd não pode ser disparada
+		nextState =  pn.getNextState(new double[] {1.0, 0.0, 0.0, 0.0},new double[] {1.0, 1.0, 1.0, 1.0});
+		assertArrayEquals(null, nextState,0);
 	}
 
-	public void testnet_firing_couter_vector() throws NumberFormatException, IOException {
-		Petrinet pn = new MarkupProcessor(this.getNetFig416()).getPetrinet();
-		double[] resultado = pn.getFiringCounterVector(new double [] {1.0, 0.0, 0.0, 0.0}, new double [] {0.0, 0.0, 0.0, 1.0});
-		//		assertArrayEquals(new double [] {1.0, 1.0, 0.0}, resultado,0);
-		//		resultado = pn.getFiringCounterVector(new double [] {1.0, 0.0, 0.0, 0.0}, new double [] {0.0, 1.0, 0.0, 0.0});
-
-		for(int i= 0; i<resultado.length;i++)
-		{
-			System.out.println(resultado[i]);
-		}
-	}
-
-	public void testnet_conservability() throws NumberFormatException, IOException {
-
-		//Petrinet pn = new MarkupProcessor(this.getNetNoConservative()).getPetrinet();
-		//Petrinet pn = new MarkupProcessor(this.getNetFig416()).getPetrinet();
-		Petrinet pn = new MarkupProcessor(this.getNetStrictlyConservative()).getPetrinet();
-
-		DenseMatrix64F A = new DenseMatrix64F(pn.incidenceMatrix());
-
-		//aplicação da SVD serve para aplicar a pseudo-inversa.
-		//decomposição em valores singulares
-		SingularValueDecomposition<DenseMatrix64F> svd = DecompositionFactory.svd(A.numRows,A.numCols,true,true,false);
-
-		if( !svd.decompose(A) )
-			throw new RuntimeException("SVD failed");
-
-		DenseMatrix64F U = svd.getU(null,false);
-		DenseMatrix64F W = svd.getW(null);
-		DenseMatrix64F V = svd.getV(null,false);
-
-		DenseMatrix64F result = new DenseMatrix64F(A.numRows,A.numCols); 
-
-		SingularOps.nullSpace(svd, result, 0.00001);
-
-		System.out.println("***************** Incidence matrix ****************");
-		System.out.println(A);
-		System.out.println("***************** Result ****************");
-		System.out.println(result);
-
-		DenseMatrix64F r = new DenseMatrix64F(A.numCols,1); 
-		//		SingularOps.nullVector(svd, true, r);
-		//		System.out.println(r);
-
-
-	}
 	private void arrayEquals(boolean [] expecteds, boolean [] actuals) {
 		for (int i = 0; i < actuals.length; i++) {
 			if (expecteds[i] != actuals[i])
@@ -332,11 +220,11 @@ public class TesteConservativeness {
 		sb.append("a t2 p4").append(nl);
 		return sb.toString();
 	}
-	private String getNetInvariante() {
+	private String getNetFig213() {
 		//Figura 2.13: Invariantes
 		//Livro REDES DE PETRI de JANETTE CARDOSO
 		//
-		StringBuilder sb = new StringBuilder("Fig8");
+		StringBuilder sb = new StringBuilder("Fig 2.13");
 		sb.append(nl);
 		sb.append("p p1 1").append(nl);
 		sb.append("p p2").append(nl);
@@ -355,9 +243,9 @@ public class TesteConservativeness {
 		sb.append("a b p1").append(nl);
 		sb.append("a b p3").append(nl);
 		sb.append("a p3 a").append(nl);
-		sb.append("a p3 c").append(nl);
+		sb.append("a p3 c 3").append(nl);
 		sb.append("a c p4").append(nl);
-		sb.append("a d p3").append(nl);
+		sb.append("a d p3 3").append(nl);
 		sb.append("a d p5").append(nl);
 		sb.append("a p5 c").append(nl);
 		return sb.toString();
@@ -385,6 +273,34 @@ public class TesteConservativeness {
 		sb.append("a c p3").append(nl);
 		sb.append("a p3 d").append(nl);
 		sb.append("a d p2 3").append(nl);
+		return sb.toString();
+	}
+	private String getNetFig24() {
+		//Figura 2.4: 
+		//Livro REDES DE PETRI de JANETTE CARDOSO
+		//
+		StringBuilder sb = new StringBuilder("Fig8");
+		sb.append(nl);
+		sb.append("p p1 1").append(nl);
+		sb.append("p p2").append(nl);
+		sb.append("p p3").append(nl);
+		sb.append("p p4").append(nl);
+		sb.append(nl);
+		sb.append("t a").append(nl);
+		sb.append("t b").append(nl);
+		sb.append("t c").append(nl);
+		sb.append("t d").append(nl);
+		sb.append(nl);
+		sb.append("a p1 a").append(nl);
+		sb.append("a a p2").append(nl);
+		sb.append("a p2 b").append(nl);
+		sb.append("a b p3").append(nl);
+		sb.append("a p3 c").append(nl);
+		sb.append("a c p4").append(nl);
+		sb.append("a p4 d").append(nl);
+		sb.append("a d p1").append(nl);
+		sb.append("a p1 b").append(nl);
+		sb.append("a c p1").append(nl);
 		return sb.toString();
 	}
 }

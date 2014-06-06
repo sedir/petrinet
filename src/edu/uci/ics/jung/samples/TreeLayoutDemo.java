@@ -248,14 +248,14 @@ public class TreeLayoutDemo extends JApplet {
      */
     private void createTree() {
     	Petrinet pn = new Petrinet("Minha rede");
-		Place p1 = pn.place("p1",1);
+		Place p1 = pn.addPlace("p1",1);
 		Place p2 = pn.place("p2");
 		Place p3 = pn.place("p3");
 		Place p4 = pn.place("p4");
 		
-		Transition t1 = pn.transition("t1");
-		Transition t2 = pn.transition("t2");
-		Transition t3 = pn.transition("t3");
+		Transition t1 = pn.addTransition("t1");
+		Transition t2 = pn.addTransition("t2");
+		Transition t3 = pn.addTransition("t3");
 
 		pn.arc(p1, t1);
 		pn.arc(t1, p2);

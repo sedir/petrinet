@@ -56,14 +56,14 @@ public class Testes {
 	public void testnet1_valida_disparos() {
 		// Valida estado inicial
 		assertArrayEquals(new double [] {2.0, 0.0, 0.0, 0.0}, petrinet1.stateVector(),0);
-		Transition t = petrinet1.getTransition("t1");
+		Transition t = petrinet1.getTransitionOrAdd("t1");
 		t.fire();
 		assertArrayEquals(new double [] {1.0, 1.0, 1.0, 0.0}, petrinet1.stateVector(),0);		
 		t.fire();
 		assertArrayEquals(new double [] {0.0, 2.0, 2.0, 0.0}, petrinet1.stateVector(),0);
 		assertEquals(t.canFire(), false);
 
-		t = petrinet1.getTransition("t2");
+		t = petrinet1.getTransitionOrAdd("t2");
 		t.fire();
 		assertArrayEquals(new double [] {0.0, 2.0, 1.0, 1.0}, petrinet1.stateVector(),0);
 		t.fire();
@@ -99,7 +99,7 @@ public class Testes {
 	}
 	@Test
 	public void testnet1_valida_transicoes_ativas() {
-		Transition t = petrinet1.getTransition("t1");
+		Transition t = petrinet1.getTransitionOrAdd("t1");
 		arrayEquals(new boolean [] {true, false, false}, petrinet1.getEnabledTransitions());
 		t.fire();
 		arrayEquals(new boolean [] {true, true, false}, petrinet1.getEnabledTransitions());	
@@ -107,7 +107,7 @@ public class Testes {
 		arrayEquals(new boolean [] {false, true, false}, petrinet1.getEnabledTransitions());	
 		assertEquals(t.canFire(), false);
 
-		t = petrinet1.getTransition("t2");
+		t = petrinet1.getTransitionOrAdd("t2");
 		t.fire();
 		arrayEquals(new boolean [] {false, true, false}, petrinet1.getEnabledTransitions());	
 		t.fire();
