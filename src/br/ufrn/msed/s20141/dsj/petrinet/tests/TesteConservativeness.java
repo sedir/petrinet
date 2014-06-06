@@ -26,7 +26,6 @@ import org.junit.Test;
 import Jama.Matrix;
 import br.ufrn.msed.s20141.dsj.petrinet.models.Petrinet;
 import br.ufrn.msed.s20141.dsj.petrinet.models.Transition;
-import br.ufrn.msed.s20141.dsj.petrinet.util.FourierMotzkin;
 import br.ufrn.msed.s20141.dsj.petrinet.util.FourierMotzkinElimination;
 import br.ufrn.msed.s20141.dsj.petrinet.util.MarkupProcessor;
 
@@ -35,7 +34,7 @@ public class TesteConservativeness {
 	private Petrinet petrinet1;
 	private Petrinet petrinet2;
 
-		@Test
+	@Test
 	public void testFourierMotzkinAlgorithm() throws NumberFormatException, IOException {
 
 		Petrinet pn = new MarkupProcessor(this.getNetFig213()).getPetrinet();
@@ -53,7 +52,7 @@ public class TesteConservativeness {
 		System.out.println(farkas);
 
 	}
-//	@Test
+	//	@Test
 	public void testFourierMotzkinAlgorithm2() throws NumberFormatException, IOException {
 		//		double[][] C = { { -1, 1, 0, 0 },
 		//		{ 1, -1, 0, 0 },
