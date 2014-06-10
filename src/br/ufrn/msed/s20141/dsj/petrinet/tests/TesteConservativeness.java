@@ -37,7 +37,7 @@ public class TesteConservativeness {
 	@Test
 	public void testFourierMotzkinAlgorithm() throws NumberFormatException, IOException {
 
-		Petrinet pn = new MarkupProcessor(this.getNetFig213()).getPetrinet();
+		Petrinet pn = new MarkupProcessor(this.getNet1()).getPetrinet();
 		//		System.out.println(pn);
 		pn.printIncidenceMatrix();
 		Matrix C = new Matrix(pn.incidenceMatrix());
@@ -60,23 +60,39 @@ public class TesteConservativeness {
 		//		{0, 0, 1, -1},
 		//		{0, 0, -1, 1}
 		//};
+		//		//						  t1, t2, t3,t4,t5,t6
+		//				double[][] C = { { -1, 0, 1, 0, 0, 0 },
+		//				{ 1, -1, 0, 0, 0, 0 },
+		//				{ 0, 1, -1, 0, 0, 0},
+		//				{0, -1, 1, 0, -1, 1},
+		//				{0, 0, 0, -1, 0, 1},
+		//				{0, 0, 0, 1, -1, 0},
+		//				{0, 0, 0, 0, 1, -1}
+		//		};
+		//		//                 t1, t2,t3,t4
 		//		double[][] C = { { -1, 1,  1, -1 },
-		//				{ 1, -1, -1, 1 },
-		//				{ 0, 0, 1, 0},
-		//				{1, 0, 0, -1},
-		//				{-1, 0, 0, 1}
-		//		};
-		//		double[][] C = { { -1, 1,  0, 0 },
-		//				{ 1, -1, 0, 0 },
-		//				{ 0, 0, 1, -1},
-		//				{0, 0, -1, 1},
-		//				{0, 1, -1, 0}
-		//		};
-		double[][] C = { { -1, 1,  0 },
-				{ 1, -1, 0},
-				{ 0, 1, -1},
-				{0, -1, 1}
+		//						{ 1, -1, -1, 1 },
+		//						{ 0, 0, 1, 0},
+		//						{1, 0, 0, -1},
+		//						{-1, 0, 0, 1}
+		//				};
+
+		//Fig 2.12 Livro Cassandra em português
+		double[][] C1 = { { -1, 1,  0, 0 },
+				{ 1, -1, 0, 0 },
+				{ 0, 0, 1, -1},
+				{0, 0, -1, 1},
+				{0, 1, -1, 0}
 		};
+		Matrix MC = new Matrix(C1);
+		MC = MC.transpose();
+		double [][]  C = MC.getArrayCopy();
+
+		//		double[][] C = { { -1, 1,  0 },
+		//				{ 1, -1, 0},
+		//				{ 0, 1, -1},
+		//				{0, -1, 1}
+		//		};
 		FourierMotzkinElimination farkas = new FourierMotzkinElimination(C);
 
 		double i[] = farkas.getInvariants();
@@ -114,6 +130,30 @@ public class TesteConservativeness {
 		}
 		assertEquals(true, true);
 	}	
+	private String getNet1() {
+		StringBuilder sb = new StringBuilder("net Minha rede ");
+		sb.append(nl);
+		sb.append("p p1 2").append(nl);
+		sb.append("p p2").append(nl);
+		sb.append("p p3").append(nl);
+		sb.append("p p4").append(nl);
+		sb.append(nl);
+		sb.append("t t1").append(nl);
+		sb.append("t t2").append(nl);
+		sb.append("t t3").append(nl);
+		sb.append(nl);
+		sb.append("a p1 t1").append(nl);
+		sb.append("a p1 t3").append(nl);
+		sb.append("a t1 p2").append(nl);
+		sb.append("a t1 p3").append(nl);
+		sb.append("a p2 t2").append(nl);
+		sb.append("a t2 p2").append(nl);
+		sb.append("a p3 t2").append(nl);
+		sb.append("a p3 t3").append(nl);
+		sb.append("a t2 p4").append(nl);
+		sb.append("a p4 t3	").append(nl);	
+		return sb.toString();
+	}
 	private String getNetFig416() {
 		//Pág. 272
 
@@ -221,7 +261,7 @@ public class TesteConservativeness {
 	}
 	private String getNetFig213() {
 		//Figura 2.13: Invariantes
-		//Livro REDES DE PETRI de JANETTE CARDOSO
+		//Livro REDES DE PETRI de JANETTE CARDOSO, versão em português
 		//
 		StringBuilder sb = new StringBuilder("Fig 2.13");
 		sb.append(nl);
@@ -302,4 +342,31 @@ public class TesteConservativeness {
 		sb.append("a c p1").append(nl);
 		return sb.toString();
 	}
+	private String getNetFig211a() {
+		//Figura 2.11: 
+		//Livro REDES DE PETRI de JANETTE CARDOSO, versão em português
+		//
+		StringBuilder sb = new StringBuilder("Fig. 2.11");
+		sb.append(nl);
+		sb.append("p p1 1").append(nl);
+		sb.append("p p2").append(nl);
+		sb.append("p p3").append(nl);
+		sb.append("p p4 1").append(nl);
+		sb.append(nl);
+		sb.append("t a").append(nl);
+		sb.append("t b").append(nl);
+		sb.append("t c").append(nl);
+		sb.append(nl);
+		sb.append("a p1 a").append(nl);
+		sb.append("a a p2").append(nl);
+		sb.append("a p2 b").append(nl);
+		sb.append("a b p3").append(nl);
+		sb.append("a p3 c").append(nl);
+		sb.append("a c p2").append(nl);
+		sb.append("a p2 c").append(nl);
+		sb.append("a c p4").append(nl);
+		sb.append("a p4 b").append(nl);
+		sb.append("a b p1").append(nl);
+		return sb.toString();
+	}	
 }

@@ -10,6 +10,7 @@ import org.ejml.ops.CommonOps;
 
 import Jama.Matrix;
 import br.ufrn.msed.s20141.dsj.petrinet.models.Arc.Direction;
+import br.ufrn.msed.s20141.dsj.petrinet.util.FourierMotzkinElimination;
 import br.ufrn.msed.s20141.dsj.petrinet.util.MarkupProcessor;
 import edu.uci.ics.jung.graph.DirectedSparseMultigraph;
 import edu.uci.ics.jung.graph.util.EdgeType;
@@ -222,6 +223,12 @@ extends PetrinetObject {
 		else
 			return Mprox.getArrayCopy()[0];
 	}   
+	public boolean hasConservative() {
+		Matrix C = new Matrix(this.incidenceMatrix());
+		C = C.transpose();
+		FourierMotzkinElimination farkas = new FourierMotzkinElimination(C.getArrayCopy());
+		return farkas.isConservative();
+	}
 	public double[] getFiringCounterVector(double[] x0 , double[] x)  {
 
 		DenseMatrix64F A = new DenseMatrix64F(this.incidenceMatrix());
